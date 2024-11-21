@@ -24,12 +24,15 @@ const CashPayment = ({ total, onSubmit, onBack }: CashPaymentProps) => {
     }
   };
 
-  const quickAmounts = [
-    total,
-    Math.ceil(total / 10) * 10,
-    Math.ceil(total / 50) * 50,
-    Math.ceil(total / 100) * 100,
-  ];
+  // Calculate quick amounts and ensure they're unique
+  const quickAmounts = Array.from(
+    new Set([
+      total, // Exact amount
+      Math.ceil(total / 5) * 5, // Round up to nearest 5
+      Math.ceil(total / 10) * 10, // Round up to nearest 10
+      Math.ceil(total / 20) * 20, // Round up to nearest 20
+    ])
+  ).sort((a, b) => a - b);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +61,7 @@ const CashPayment = ({ total, onSubmit, onBack }: CashPaymentProps) => {
         <div className="grid grid-cols-2 gap-2">
           {quickAmounts.map((amount) => (
             <button
-              key={amount}
+              key={`amount-${amount}`}
               type="button"
               onClick={() => setAmountPaid(amount.toString())}
               className="p-2 border rounded-lg hover:bg-gray-50"

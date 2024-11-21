@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { api } from '../api';
 
 interface User {
   _id: string;
@@ -37,6 +38,9 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{ token: string; _id: string; name: string; email: string }>
     ) => {
+      // Clear existing data first
+      localStorage.clear();
+      
       const { token, ...user } = action.payload;
       state.token = token;
       state.user = user;
@@ -46,8 +50,10 @@ const authSlice = createSlice({
     logout: (state) => {
       state.token = null;
       state.user = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // Clear all localStorage data
+      localStorage.clear();
+      // Reset API cache and state
+      api.util.resetApiState();
     },
   },
 });

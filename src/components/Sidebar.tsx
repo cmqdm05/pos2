@@ -36,6 +36,8 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('selectedStoreId');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     dispatch(logout());
   };
 

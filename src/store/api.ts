@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from './index';
+import { logout } from './slices/authSlice';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -15,3 +16,11 @@ export const api = createApi({
   endpoints: () => ({}),
   tagTypes: ['Products', 'Categories', 'Sales', 'Users', 'Stores'],
 });
+
+// Add middleware to handle unauthorized responses
+export const apiMiddleware = (store: any) => (next: any) => (action: any) => {
+  if (action?.payload?.status === 401) {
+    store.dispatch(logout());
+  }
+  return next(action);
+};

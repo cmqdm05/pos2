@@ -29,10 +29,18 @@ export const storeApi = api.injectEndpoints({
     getStores: builder.query<Store[], void>({
       query: () => 'stores',
       providesTags: ['Stores'],
+      transformResponse: (response: Store[]) => {
+        return [...response].sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      },
+      keepUnusedDataFor: 0, // Don't keep data in cache
+      forceRefetch: () => true, // Always refetch
     }),
     getStore: builder.query<Store, string>({
       query: (id) => `stores/${id}`,
-      providesTags: ['Stores'],
+      providesTags: (result, error, id) => [{ type: 'Stores', id }],
+      keepUnusedDataFor: 0, // Don't keep data in cache
     }),
     updateStore: builder.mutation<Store, Partial<Store> & Pick<Store, '_id'>>({
       query: ({ _id, ...patch }) => ({
@@ -40,7 +48,10 @@ export const storeApi = api.injectEndpoints({
         method: 'PUT',
         body: patch,
       }),
-      invalidatesTags: ['Stores'],
+      invalidatesTags: (result, error, { _id }) => [
+        { type: 'Stores', id: _id },
+        'Stores',
+      ],
     }),
     deleteStore: builder.mutation<void, string>({
       query: (id) => ({

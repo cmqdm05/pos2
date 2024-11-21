@@ -185,7 +185,6 @@ const Sales = () => {
 
   return (
     <div className="h-[calc(100vh-6rem)] flex gap-6">
-      {/* Products Section */}
       <div className="flex-1 flex flex-col">
         <div className="mb-4 space-y-4">
           <input
@@ -208,7 +207,6 @@ const Sales = () => {
         />
       </div>
 
-      {/* Cart Section */}
       <div className="w-96 bg-white rounded-lg shadow-lg flex flex-col">
         <div className="p-4 border-b">
           <h2 className="text-lg font-semibold flex items-center gap-2">

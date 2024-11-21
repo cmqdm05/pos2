@@ -23,10 +23,13 @@ const saleItemSchema = new mongoose.Schema({
   }],
   discounts: [{
     name: String,
-    type: String,
+    type: {
+      type: String,
+      enum: ['percentage', 'fixed'],
+      required: true
+    },
     value: Number
-  }],
-  subtotal: Number
+  }]
 });
 
 const saleSchema = new mongoose.Schema({
@@ -43,7 +46,10 @@ const saleSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['cash', 'card']
+    enum: ['cash', 'card', 'qr']
+  },
+  paymentDetails: {
+    type: mongoose.Schema.Types.Mixed
   },
   status: {
     type: String,

@@ -1,5 +1,37 @@
 import { api } from '../api';
-import { Sale } from '../../components/sales/types';
+import { CartItem } from '../../components/sales/types';
+
+export interface Sale {
+  _id: string;
+  store: string;
+  items: Array<{
+    product: {
+      _id: string;
+      name: string;
+      price: number;
+    };
+    quantity: number;
+    modifiers: Array<{
+      name: string;
+      option: {
+        name: string;
+        price: number;
+      };
+    }>;
+    discounts: Array<{
+      name: string;
+      type: 'percentage' | 'fixed';
+      value: number;
+    }>;
+    price: number;
+  }>;
+  total: number;
+  paymentMethod: 'cash' | 'card' | 'qr';
+  paymentDetails: any;
+  status: 'completed' | 'refunded';
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface CreateSaleRequest {
   store: string;
@@ -18,9 +50,17 @@ export interface CreateSaleRequest {
       type: 'percentage' | 'fixed';
       value: number;
     }>;
+    price: number;
   }>;
   total: number;
-  paymentMethod: 'cash' | 'card';
+  paymentMethod: 'cash' | 'card' | 'qr';
+  paymentDetails: any;
+}
+
+export interface SaleMetrics {
+  totalSales: number;
+  totalOrders: number;
+  averageOrderValue: number;
 }
 
 export const saleApi = api.injectEndpoints({
@@ -37,10 +77,24 @@ export const saleApi = api.injectEndpoints({
       query: (storeId) => `sales/${storeId}`,
       providesTags: ['Sales'],
     }),
+    getSaleMetrics: builder.query<SaleMetrics, { storeId: string; startDate: string; endDate: string }>({
+      query: ({ storeId, startDate, endDate }) => 
+        `sales/${storeId}/metrics?startDate=${startDate}&endDate=${endDate}`,
+      providesTags: ['Sales'],
+    }),
+    refundSale: builder.mutation<Sale, string>({
+      query: (saleId) => ({
+        url: `sales/${saleId}/refund`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Sales'],
+    }),
   }),
 });
 
 export const {
   useCreateSaleMutation,
   useGetSalesQuery,
+  useGetSaleMetricsQuery,
+  useRefundSaleMutation,
 } = saleApi;
